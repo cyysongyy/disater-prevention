@@ -3,117 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>辰光防災大挑戰 - 互動遊戲</title>
+    <title>115年度辰光國小防災實戰挑戰</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0F172A; color: white; font-family: 'PingFang TC', sans-serif; }
-        .card:hover { transform: scale(1.05); transition: 0.3s; cursor: pointer; }
+        body { background-color: #0F172A; color: white; font-family: 'PingFang TC', sans-serif; overflow-x: hidden; }
+        .btn-option { transition: all 0.2s; border: 1px solid #334155; }
+        .btn-option:hover { background-color: #334155; transform: translateY(-2px); border-color: #A3E635; }
+        .status-bar { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="p-5 flex flex-col items-center justify-center min-h-screen">
+<body class="min-h-screen flex flex-col">
 
-    <!-- 第一關：角色挑選 -->
-    <div id="setup-screen" class="text-center">
-        <h1 class="text-3xl font-bold mb-8 text-lime-400">辰光防災大挑戰：角色挑選</h1>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div onclick="selectRole('指揮官')" class="card bg-slate-800 p-5 rounded-xl border-2 border-slate-700">
-                <div class="text-5xl mb-3">🛡️</div>
-                <h2 class="font-bold">指揮官</h2>
-                <p class="text-xs text-slate-400">下達廣播與搜救指令</p>
+    <!-- 頂部狀態欄 -->
+    <div id="top-bar" class="status-bar sticky top-0 p-4 border-b border-slate-700 flex justify-between items-center z-50 hidden">
+        <div>
+            <span id="display-role" class="text-lime-400 font-bold"></span>
+            <span id="display-time" class="ml-4 text-slate-400 text-sm">時間: 09:21 AM</span>
+        </div>
+        <div class="text-right">
+            <span class="text-xs text-slate-500">目標: 綜合球場</span>
+        </div>
+    </div>
+
+    <!-- 1. 角色挑選畫面 -->
+    <div id="screen-selector" class="flex-grow flex flex-col items-center justify-center p-6">
+        <h1 class="text-3xl font-black mb-2 text-center text-lime-400">辰光防災大挑戰</h1>
+        <p class="text-slate-400 mb-10 text-center">請挑選您的演練角色以開始挑戰</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+            <button onclick="startGame('指揮官')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
+                <div class="text-4xl mb-2">🛡️</div>
+                <div class="font-bold text-lg">指揮官 (校長)</div>
+                <div class="text-xs text-slate-500 mt-2">決策、廣播、調度</div>
+            </button>
+            <button onclick="startGame('導師')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
+                <div class="text-4xl mb-2">🎒</div>
+                <div class="font-bold text-lg">導師 / 避難組</div>
+                <div class="text-xs text-slate-500 mt-2">掩護安撫、清點、巡視[cite: 9]</div>
+            </button>
+            <button onclick="startGame('通報組')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
+                <div class="text-4xl mb-2">📞</div>
+                <div class="font-bold text-lg">通報組長 (黃雅玲)</div>
+                <div class="text-xs text-slate-500 mt-2">119通報、紀錄、聯繫</div>
+            </button>
+            <button onclick="startGame('搶救組')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
+                <div class="text-4xl mb-2">⛑️</div>
+                <div class="font-bold text-lg">搶救組 (王怡文)</div>
+                <div class="text-xs text-slate-500 mt-2">校舍巡視、搜救、醫療[cite: 9]</div>
+            </button>
+            <button onclick="startGame('學生')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl md:col-span-2">
+                <div class="text-4xl mb-2">🧒</div>
+                <div class="font-bold text-lg">學生 (全體同學)</div>
+                <div class="text-xs text-slate-500 mt-2">個人防護、紀律、疏散[cite: 9]</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. 遊戲主畫面 -->
+    <div id="screen-game" class="flex-grow p-6 hidden flex flex-col items-center">
+        <div id="game-container" class="w-full max-w-2xl bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700">
+            <div id="mission-info" class="mb-6">
+                <h2 id="stage-title" class="text-xl font-bold text-lime-400 mb-2"></h2>
+                <p id="scenario-text" class="text-slate-300"></p>
             </div>
-            <div onclick="selectRole('導師')" class="card bg-slate-800 p-5 rounded-xl border-2 border-slate-700">
-                <div class="text-5xl mb-3">🎒</div>
-                <h2 class="font-bold">導師</h2>
-                <p class="text-xs text-slate-400">保護學生與清點人數</p>
-            </div>
-            <div onclick="selectRole('通報組')" class="card bg-slate-800 p-5 rounded-xl border-2 border-slate-700">
-                <div class="text-5xl mb-3">📞</div>
-                <h2 class="font-bold">通報組</h2>
-                <p class="text-xs text-slate-400">對外聯繫與紀錄決策</p>
-            </div>
-            <div onclick="selectRole('搶救組')" class="card bg-slate-800 p-5 rounded-xl border-2 border-slate-700">
-                <div class="text-5xl mb-3">⛑️</div>
-                <h2 class="font-bold">搶救組</h2>
-                <p class="text-xs text-slate-400">執行搜救與緊急醫療</p>
+            
+            <div id="options-container" class="flex flex-col gap-3">
+                <!-- 選項由 JS 生成 -->
             </div>
         </div>
     </div>
 
-    <!-- 第二關：腳本挑戰 (簡單範例) -->
-    <div id="game-screen" class="hidden text-center max-w-lg">
-        <h2 id="role-display" class="text-xl text-lime-400 mb-4 font-bold"></h2>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-2xl mb-5">
-            <p id="scenario-text" class="text-lg mb-6"></p>
-            <div id="options" class="flex flex-col gap-3"></div>
-        </div>
-        <p class="text-slate-500 text-sm italic">時間正在倒數：09:21 AM...</p>
-    </div>
-
-    <!-- 結束畫面 -->
-    <div id="end-screen" class="hidden text-center">
-        <h2 class="text-3xl font-bold text-lime-400 mb-5">挑戰完成！</h2>
-        <p class="mb-5">資料正自動同步至 Google Sheet...</p>
-        <button onclick="location.reload()" class="bg-lime-500 text-black px-6 py-2 rounded-full font-bold">再玩一次</button>
+    <!-- 3. 結束畫面 -->
+    <div id="screen-end" class="flex-grow flex flex-col items-center justify-center p-6 hidden">
+        <div class="text-6xl mb-4">🏆</div>
+        <h2 class="text-3xl font-black text-lime-400 mb-2">任務完成！</h2>
+        <p id="end-message" class="text-slate-400 mb-8 text-center max-w-md"></p>
+        <button onclick="location.reload()" class="bg-lime-500 text-black px-10 py-3 rounded-full font-black hover:bg-lime-400">重新挑戰</button>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_LIIFkec6wiVn-e0xw2ongOUPX4DsH-lsybkeHzJsHwXnw-A_k4asKxYog77knIj5/exec";
-        let gameState = {
-            playerName: "玩家",
+        
+        let currentRole = "";
+        let currentStage = 0;
+        let gameResults = {
+            playerName: "辰光使用者",
             role: "",
-            totalTime: "04:21",
+            totalTime: "05:00",
             successRate: "100%",
             missingFound: "是",
             commStatus: "是",
             language: "中"
         };
 
-        function selectRole(role) {
-            gameState.role = role;
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('role-display').innerText = `目前身分：${role}`;
-            startChallenge();
+        // 角色關卡定義[cite: 9]
+        const roleMissions = {
+            "指揮官": [
+                { time: "09:21", title: "事故覺察", scenario: "地震預警響起，身為指揮官，你在校長室應採取？", options: ["立即執行趴下、掩護、穩住", "立刻跑出校長室廣播"], correct: 0 },
+                { time: "09:22", title: "發布疏散", scenario: "主震稍歇，你準備下令全校疏散，你的動作是？", options: ["吹響哨音(一長四短)並廣播導引至綜合球場", "直接打電話給消防隊"], correct: 0 },
+                { time: "09:26", title: "應變決策", scenario: "抵達綜合球場，得知二甲教室有人受困，你的指令？", options: ["派遣搶救組前往二甲教室搜救", "請全校學生回教室幫忙"], correct: 0 }
+            ],
+            "導師": [
+                { time: "09:21", title: "就地掩蔽", scenario: "地震發生，課堂上學生開始慌張，你該說什麼？", options: ["不要害怕，躲進桌下穩住，保護好頭頸部", "趕快站起來，往門口跑"], correct: 0 },
+                { time: "09:22", title: "疏散整備", scenario: "準備疏散，你如何協助不同年段學生？", options: ["協助低年級戴頭套、中高年級拿桌墊", "讓學生空手直接跑"], correct: 0 },
+                { time: "09:23", title: "清場確認", scenario: "帶領隊伍撤離教室前，必須完成哪個關鍵動作？", options: ["巡視教室及廁所確認沒人", "先把教室門反鎖"], correct: 0 },
+                { time: "09:26", title: "人數回報", scenario: "抵達球場發現少一名學生，如何回報？", options: ["舉紅卡，註明可能受困於二甲教室", "舉綠卡，先不要驚動大家"], correct: 0 }
+            ],
+            "通報組": [
+                { time: "09:26", title: "成立通報點", scenario: "抵達球場後，通報組的首要動作？", options: ["領取物資並紀錄指揮中心決策內容", "先去搬運受傷學生"], correct: 0 },
+                { time: "09:29", title: "對外通報", scenario: "指揮官下令通報119，你的說話內容？", options: ["1名學生受傷，請求救護車從正門進入支援", "學校有人受傷，請隨便派一輛車來"], correct: 0 },
+                { time: "09:30", title: "家長聯繫", scenario: "如何通知受傷學生的家長？", options: ["告知學生因地震砸傷已送往媽祖醫院", "打電話叫家長自己來帶人"], correct: 0 }
+            ],
+            "搶救組": [
+                { time: "09:26", title: "校舍巡視", scenario: "收到指令檢查校舍，你發現北棟教室狀況？", options: ["回報北棟教室外牆有碎石掉落", "直接進入倒塌建物"], correct: 0 },
+                { time: "09:27", title: "傷患搜救", scenario: "在二甲教室發現傷患，你的第一句話？", options: ["你還好嗎? 哪裡覺得不舒服? 能動嗎?", "趕快起來，我們沒時間了"], correct: 0 },
+                { time: "09:29", title: "傷患後送", scenario: "發現傷患右小腿撕裂傷，應運送至？", options: ["綜合球場救護站", "校門口等待"], correct: 0 }
+            ],
+            "學生": [
+                { time: "09:21", title: "趴掩穩", scenario: "聽到預警聲響，你應該？", options: ["立即躲在桌下保護頭頸部", "躲到走廊上看"], correct: 0 },
+                { time: "09:23", title: "疏散紀律", scenario: "跟隨老師撤離時，應遵守？", options: ["不推、不語、不跑、不回頭", "可以小聲跟同學聊天"], correct: 0 }
+            ]
+        };
+
+        function startGame(role) {
+            currentRole = role;
+            currentStage = 0;
+            gameResults.role = role;
+            
+            document.getElementById('screen-selector').classList.add('hidden');
+            document.getElementById('top-bar').classList.remove('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('display-role').innerText = `角色: ${role}`;
+            
+            renderStage();
         }
 
-        function startChallenge() {
-            const scenario = "地震預警響起，身為" + gameState.role + "，你第一句話會說什麼？";
-            document.getElementById('scenario-text').innerText = scenario;
+        function renderStage() {
+            const mission = roleMissions[currentRole][currentStage];
+            document.getElementById('display-time').innerText = `演練時間: ${mission.time} AM`;
+            document.getElementById('stage-title').innerText = mission.title;
+            document.getElementById('scenario-text').innerText = mission.scenario;
             
-            const options = {
-                "指揮官": ["全校疏散至綜合球場！", "大家原地不要動！"],
-                "導師": ["躲進桌下穩住，保護頭頸部！", "快點跑出去！"],
-                "通報組": ["聯繫媽祖醫院支援！", "先拍照發社群！"],
-                "搶救組": ["準備進入二甲搜救！", "在操場等指令！"]
-            };
-
-            const div = document.getElementById('options');
-            options[gameState.role].forEach((opt, index) => {
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+            
+            mission.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "bg-slate-700 hover:bg-slate-600 p-3 rounded-lg text-left";
-                btn.innerText = opt;
-                btn.onclick = () => endGame();
-                div.appendChild(btn);
+                btn.className = "btn-option p-4 rounded-xl text-left bg-slate-700 flex justify-between items-center";
+                btn.innerHTML = `<span>${opt}</span><span class="text-slate-500 text-xs">選擇 →</span>`;
+                btn.onclick = () => handleChoice(idx);
+                optionsContainer.appendChild(btn);
             });
         }
 
-        function endGame() {
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('end-screen').classList.remove('hidden');
-            saveToSheet();
+        function handleChoice(index) {
+            const mission = roleMissions[currentRole][currentStage];
+            if (index !== mission.correct) {
+                alert("提醒：這不符合腳本規範[cite: 9]！請根據防災演練標準重新選擇。");
+                return;
+            }
+
+            currentStage++;
+            if (currentStage < roleMissions[currentRole].length) {
+                renderStage();
+            } else {
+                finishGame();
+            }
         }
 
-        function saveToSheet() {
-            // 使用 no-cors 避免跨網域問題 (但無法讀取回傳值)
-            // 建議使用上述部署時選擇「所有人」存取
+        function finishGame() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('top-bar').classList.add('hidden');
+            document.getElementById('screen-end').classList.remove('hidden');
+            
+            let msg = `身為${currentRole}，您已成功協助辰光國小完成 115 年度防災演練！[cite: 9]`;
+            document.getElementById('end-message').innerText = msg;
+            
+            // 傳送資料至 Google Sheets
             fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(gameState)
-            }).then(() => {
-                console.log("資料已成功寫入！");
-            }).catch(err => console.error("寫入失敗：", err));
+                body: JSON.stringify(gameResults)
+            }).then(() => console.log("資料同步完成[cite: 4]"));
         }
     </script>
 </body>
