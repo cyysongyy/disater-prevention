@@ -3,66 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>115年度辰光國小防災實戰演練 (語音版)</title>
+    <title>115年度辰光國小防災實戰演練 (視覺語音版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0F172A; color: white; font-family: 'PingFang TC', sans-serif; }
-        .btn-option { transition: all 0.2s; border: 1px solid #334155; text-align: left; padding: 1.25rem; border-radius: 1rem; background: #1E293B; width: 100%; margin-bottom: 0.75rem; }
+        .btn-option { transition: all 0.2s; border: 1px solid #334155; text-align: left; padding: 1.25rem; border-radius: 1rem; background: #1E293B; width: 100%; margin-bottom: 0.75rem; display: flex; align-items: center; }
         .btn-option:hover { background-color: #334155; border-color: #A3E635; transform: translateY(-2px); }
         .hidden { display: none; }
-        .speech-bubble { background: #A3E635; color: #000; padding: 10px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-weight: bold; }
+        .speech-bubble { background: #A3E635; color: #000; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
-    <!-- 頂部資訊 -->
+    <!-- 頂部狀態 -->
     <div id="info-bar" class="w-full max-w-4xl p-4 mb-6 bg-slate-800 rounded-xl border border-slate-700 flex justify-between items-center hidden">
-        <div>
+        <div class="flex items-center">
             <span id="role-tag" class="bg-lime-500 text-black px-2 py-1 rounded text-xs font-bold mr-2"></span>
-            <span id="game-time" class="text-slate-400 italic"></span>
+            <span id="game-time" class="text-slate-400 italic text-sm"></span>
         </div>
-        <div class="text-xs text-slate-500 font-bold">📢 語音引導模式已開啟</div>
+        <div class="text-xs text-slate-500 font-bold">🔊 語音與圖示引導已開啟</div>
     </div>
 
     <!-- 1. 角色選擇 -->
     <div id="selector-screen" class="flex-grow flex flex-col items-center justify-center">
         <h1 class="text-3xl font-black mb-2 text-lime-400 text-center">辰光防災大挑戰</h1>
-        <p class="text-slate-400 mb-8 text-center">請點選角色並開啟聲音，進入 115.05.05 演練現場</p>
+        <p class="text-slate-400 mb-8 text-center">依照 115.05.05 腳本執行任務</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-4xl">
-            <button onclick="initGame('指揮官')" class="btn-option flex flex-col items-center text-center">
-                <span class="text-3xl mb-2">🛡️</span><span class="font-bold text-lg">指揮官</span>
+            <button onclick="initGame('指揮官')" class="btn-option flex-col !items-center !text-center">
+                <span class="text-4xl mb-2">🛡️</span><span class="font-bold">指揮官</span>
             </button>
-            <button onclick="initGame('導師')" class="btn-option flex flex-col items-center text-center">
-                <span class="text-3xl mb-2">🎒</span><span class="font-bold text-lg">導師 / 避難引導組</span>
+            <button onclick="initGame('導師')" class="btn-option flex-col !items-center !text-center">
+                <span class="text-4xl mb-2">🎒</span><span class="font-bold">導師 / 避難組</span>
             </button>
-            <button onclick="initGame('通報組')" class="btn-option flex flex-col items-center text-center">
-                <span class="text-3xl mb-2">📞</span><span class="font-bold text-lg">通報組長</span>
+            <button onclick="initGame('通報組')" class="btn-option flex-col !items-center !text-center">
+                <span class="text-4xl mb-2">📞</span><span class="font-bold">通報組</span>
             </button>
-            <button onclick="initGame('搶救組')" class="btn-option flex flex-col items-center text-center">
-                <span class="text-3xl mb-2">⛑️</span><span class="font-bold text-lg">搶救組</span>
+            <button onclick="initGame('搶救組')" class="btn-option flex-col !items-center !text-center">
+                <span class="text-4xl mb-2">⛑️</span><span class="font-bold">搶救組</span>
             </button>
-            <button onclick="initGame('學生')" class="btn-option flex flex-col items-center text-center">
-                <span class="text-3xl mb-2">🧒</span><span class="font-bold text-lg">學生</span>
+            <button onclick="initGame('學生')" class="btn-option flex-col !items-center !text-center">
+                <span class="text-4xl mb-2">🧒</span><span class="font-bold">學生</span>
             </button>
         </div>
     </div>
 
     <!-- 2. 遊戲主畫面 -->
     <div id="game-screen" class="w-full max-w-2xl bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700 hidden">
-        <div class="mb-6">
-            <div id="speaking-indicator" class="speech-bubble hidden">正在說話中...</div>
-            <h2 id="mission-title" class="text-xl font-bold text-lime-400 mb-2"></h2>
-            <p id="scenario-desc" class="text-slate-300 leading-relaxed mb-4"></p>
-        </div>
+        <div id="speaking-indicator" class="speech-bubble hidden">📢 正在播放引導語...</div>
+        <h2 id="mission-title" class="text-xl font-bold text-lime-400 mb-2 border-l-4 border-lime-500 pl-3"></h2>
+        <p id="scenario-desc" class="text-slate-300 leading-relaxed mb-6"></p>
         <div id="options-list"></div>
     </div>
 
     <!-- 3. 完成畫面 -->
     <div id="end-screen" class="hidden text-center flex-grow flex flex-col justify-center">
-        <div class="text-6xl mb-4">🏆</div>
-        <h2 class="text-3xl font-black text-lime-400 mb-2">演練達成！</h2>
+        <div class="text-7xl mb-4">🏆</div>
+        <h2 class="text-3xl font-black text-lime-400 mb-2">演練成功！</h2>
         <p id="end-text" class="text-slate-400 mb-8 max-w-md mx-auto"></p>
-        <button onclick="location.reload()" class="bg-lime-500 text-black px-10 py-3 rounded-full font-bold hover:bg-lime-400">重新挑戰</button>
+        <button onclick="location.reload()" class="bg-lime-500 text-black px-12 py-4 rounded-full font-black hover:bg-lime-400 shadow-lg shadow-lime-500/20">回首頁重新演練</button>
     </div>
 
     <script>
@@ -71,29 +70,92 @@
 
         const missions = {
             "指揮官": [
-                { time: "09:22", title: "發布疏散廣播", scenario: "主震暫歇，你必須正式下令疏散：", speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", options: ["廣播：全校師生請注意...引導至綜合球場。", "大喊：大家快跑！"], correct: 0 },
-                { time: "09:26", title: "派遣搜救指令[cite: 5]", scenario: "接獲傷患訊息，你對搶救組下令：", speech: "請各班老師及各組組長開始清點並回報人數。清點後發現有人受困於二甲教室，請搶救組派員進行搶救。", options: ["指令：清點後發現有人受困於二甲教室，請搶救組派員進行搶救。", "指令：請二甲導師自己去救人。"], correct: 0 }
+                { 
+                    time: "09:22", 
+                    title: "發布疏散廣播", 
+                    scenario: "主震暫歇，你必須立即下令全校疏散，你的動作是？", 
+                    speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", 
+                    options: [
+                        { icon: "📢", text: "廣播引導語：全校師生請注意...引導至綜合球場。", isCorrect: true },
+                        { icon: "🏃", text: "大喊：快點跑出去，大家散開！", isCorrect: false }
+                    ]
+                },
+                { 
+                    time: "09:26", 
+                    title: "派遣搜救指令[cite: 5]", 
+                    scenario: "清點人數後得知有人受困二甲教室，你如何指示？", 
+                    speech: "請各班老師及各組組長開始清點並回報人數。清點後發現有人受困於二甲教室，請搶救組派員進行搶救。", 
+                    options: [
+                        { icon: "⛑️", text: "派令：發現有人受困二甲，請搶救組立即搶救。", isCorrect: true },
+                        { icon: "❓", text: "詢問：二甲老師在不在？你自己進去看看。", isCorrect: false }
+                    ]
+                }
             ],
             "導師": [
-                { time: "09:21", title: "就地掩蔽安撫[cite: 5]", scenario: "地震發生，你在教室對學生說：", speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", options: ["安撫：各位同學不要害怕，請盡量躲進桌下並穩住。", "命令：快點出去外面！"], correct: 0 },
-                { time: "09:23", title: "清點人數回報[cite: 5]", scenario: "抵達球場，你對指揮中心回報：", speech: "本班應到8人，實到7人，一人失蹤，可能受困於二甲教室，請派員救援。", options: ["回報：一人失蹤，可能受困於二甲教室。", "回報：全員到齊。"], correct: 0 }
+                { 
+                    time: "09:21", 
+                    title: "就地掩蔽安撫[cite: 5]", 
+                    scenario: "地震發生中，你在教室對學生喊話：", 
+                    speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", 
+                    options: [
+                        { icon: "🛡️", text: "引導：不要害怕，躲進桌下穩住，保護好頭頸部。", isCorrect: true },
+                        { icon: "🚪", text: "大叫：快排隊，馬上衝出教室！", isCorrect: false }
+                    ]
+                },
+                { 
+                    time: "09:23", 
+                    title: "人數清點回報[cite: 5]", 
+                    scenario: "抵達球場，發現少了一名學生，你如何對指揮官回報？", 
+                    speech: "本班應到三十人，實到二十九人，一人失蹤，可能受困於二甲教室，請派員救援。", 
+                    options: [
+                        { icon: "🚩", text: "回報：舉紅卡，一人失蹤可能受困於二甲教室。", isCorrect: true },
+                        { icon: "✅", text: "回報：舉綠卡，學生應該都在後面。", isCorrect: false }
+                    ]
+                }
             ],
             "通報組": [
-                { time: "09:29", title: "外部通報 119[cite: 5]", scenario: "聯繫 119 請求支援：", speech: "本校因地震影響有 1 位學生受傷，目前已送至救護站進行初步處理，請求派遣救護車從側門進入支援。", options: ["通報：請求派遣救護車從正門進入支援。", "通報：學校有人受傷，請趕快來。"], correct: 0 }
+                { 
+                    time: "09:29", 
+                    title: "對外通報 119[cite: 5]", 
+                    scenario: "聯繫 119 請求支援受傷學生，你的精確台詞是？", 
+                    speech: "本校因地震影響有 1 位學生受傷，目前已送至救護站進行初步處理，請求派遣救護車從正門進入支援。", 
+                    options: [
+                        { icon: "🚑", text: "通報：1人受傷，請求救護車從正門進入支援。", isCorrect: true },
+                        { icon: "📱", text: "通報：我們在北港辰光國小，快來救人。", isCorrect: false }
+                    ]
+                }
             ],
             "搶救組": [
-                { time: "09:27", title: "搜救檢傷詢問[cite: 5]", scenario: "在教室發現受傷學生，你問他：", speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", options: ["詢問：你還好嗎？哪裡覺得不舒服？能動嗎？", "詢問：你怎麼受傷的？"], correct: 0 }
+                { 
+                    time: "09:27", 
+                    title: "現場檢傷詢問[cite: 5]", 
+                    scenario: "在二甲教室尋獲受傷學生，你的第一句關懷是？", 
+                    speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", 
+                    options: [
+                        { icon: "🩹", text: "檢傷：你還好嗎？哪裡覺得不舒服？能動嗎？", isCorrect: true },
+                        { icon: "💪", text: "指令：手給我，我把你拉起來。", isCorrect: false }
+                    ]
+                }
             ],
             "學生": [
-                { time: "09:23", title: "疏散紀律[cite: 5]", scenario: "撤離時你心中默念的守則：", speech: "不推、不語、不跑、不回頭。", options: ["默念：不推、不語、不跑、不回頭。", "邊跑邊叫：地震好可怕！"], correct: 0 }
+                { 
+                    time: "09:23", 
+                    title: "疏散紀律守則[cite: 5]", 
+                    scenario: "撤離過程中，你必須嚴格遵守的四不原則是？", 
+                    speech: "不推、不語、不跑、不回頭。", 
+                    options: [
+                        { icon: "🔇", text: "守則：不推、不語、不跑、不回頭。", isCorrect: true },
+                        { icon: "🗣️", text: "守則：邊走邊討論地震大不大。", isCorrect: false }
+                    ]
+                }
             ]
         };
 
         function speak(text, callback) {
-            window.speechSynthesis.cancel(); 
+            window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'zh-TW';
-            msg.rate = 0.9; 
+            msg.rate = 0.85; 
             msg.onstart = () => document.getElementById('speaking-indicator').classList.remove('hidden');
             msg.onend = () => {
                 document.getElementById('speaking-indicator').classList.add('hidden');
@@ -114,25 +176,24 @@
 
         function renderStep() {
             const data = missions[curRole][curStep];
-            document.getElementById('game-time').innerText = `演練時間: ${data.time} AM`;
+            document.getElementById('game-time').innerText = `時間: ${data.time} AM`;
             document.getElementById('mission-title').innerText = data.title;
             document.getElementById('scenario-desc').innerText = data.scenario;
             
             const list = document.getElementById('options-list');
             list.innerHTML = "";
-            data.options.forEach((txt, idx) => {
+            data.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.className = "btn-option";
-                btn.innerText = txt;
-                btn.onclick = () => checkAns(idx);
+                btn.innerHTML = `<span class="text-2xl mr-4">${opt.icon}</span><span class="text-sm font-medium">${opt.text}</span>`;
+                btn.onclick = () => checkAns(opt.isCorrect);
                 list.appendChild(btn);
             });
         }
 
-        function checkAns(idx) {
+        function checkAns(isCorrect) {
             const data = missions[curRole][curStep];
-            if (idx === data.correct) {
-                // 播放語音
+            if (isCorrect) {
                 speak(data.speech, () => {
                     curStep++;
                     if (curStep < missions[curRole].length) {
@@ -142,7 +203,7 @@
                     }
                 });
             } else {
-                alert("這不符合演練腳本喔！請再想一下正確的處置方式[cite: 5]。");
+                alert("這不符合 115 年度演練腳本喔！請再看一次正確流程[cite: 5]。");
             }
         }
 
@@ -150,7 +211,7 @@
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('info-bar').classList.add('hidden');
             document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('end-text').innerText = `恭喜完成！您已正確演練「${curRole}」在 115 年度劇本中的所有任務[cite: 5]。`;
+            document.getElementById('end-text').innerText = `做得好！你已掌握「${curRole}」在辰光國小防災腳本中的核心引導語與動作[cite: 5]。`;
         }
     </script>
 </body>
