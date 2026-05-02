@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -21,41 +21,41 @@
             <span id="display-role" class="text-lime-400 font-bold"></span>
             <span id="display-time" class="ml-4 text-slate-400 text-sm">時間: 09:21 AM</span>
         </div>
-        <div class="text-right">
-            <span class="text-xs text-slate-500">目標: 綜合球場</span>
+        <div class="text-right text-xs text-slate-500">
+            目標地點：綜合球場[cite: 9]
         </div>
     </div>
 
     <!-- 1. 角色挑選畫面 -->
     <div id="screen-selector" class="flex-grow flex flex-col items-center justify-center p-6">
         <h1 class="text-3xl font-black mb-2 text-center text-lime-400">辰光防災大挑戰</h1>
-        <p class="text-slate-400 mb-10 text-center">請挑選您的演練角色以開始挑戰</p>
+        <p class="text-slate-400 mb-10 text-center">請挑選您的演練角色以開始挑戰[cite: 9]</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
             <button onclick="startGame('指揮官')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
                 <div class="text-4xl mb-2">🛡️</div>
-                <div class="font-bold text-lg">指揮官 (校長)</div>
-                <div class="text-xs text-slate-500 mt-2">決策、廣播、調度</div>
+                <div class="font-bold text-lg">指揮官</div>
+                <div class="text-xs text-slate-500 mt-2">決策判斷、發布廣播指令[cite: 9]</div>
             </button>
             <button onclick="startGame('導師')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
                 <div class="text-4xl mb-2">🎒</div>
-                <div class="font-bold text-lg">導師 / 避難組</div>
-                <div class="text-xs text-slate-500 mt-2">掩護安撫、清點、巡視[cite: 9]</div>
+                <div class="font-bold text-lg">導師 / 避難引導組</div>
+                <div class="text-xs text-slate-500 mt-2">掩護安撫、清點人數、巡視廁所[cite: 9]</div>
             </button>
             <button onclick="startGame('通報組')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
                 <div class="text-4xl mb-2">📞</div>
-                <div class="font-bold text-lg">通報組長 (黃雅玲)</div>
-                <div class="text-xs text-slate-500 mt-2">119通報、紀錄、聯繫</div>
+                <div class="font-bold text-lg">通報組</div>
+                <div class="text-xs text-slate-500 mt-2">119通報、紀錄決策、家長聯繫[cite: 8, 9]</div>
             </button>
             <button onclick="startGame('搶救組')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl">
                 <div class="text-4xl mb-2">⛑️</div>
-                <div class="font-bold text-lg">搶救組 (王怡文)</div>
-                <div class="text-xs text-slate-500 mt-2">校舍巡視、搜救、醫療[cite: 9]</div>
+                <div class="font-bold text-lg">搶救組</div>
+                <div class="text-xs text-slate-500 mt-2">校舍巡查、受困搜救、急救處理[cite: 9]</div>
             </button>
             <button onclick="startGame('學生')" class="bg-slate-800 p-6 rounded-2xl text-center border-2 border-slate-700 hover:border-lime-500 transition shadow-xl md:col-span-2">
                 <div class="text-4xl mb-2">🧒</div>
-                <div class="font-bold text-lg">學生 (全體同學)</div>
-                <div class="text-xs text-slate-500 mt-2">個人防護、紀律、疏散[cite: 9]</div>
+                <div class="font-bold text-lg">學生</div>
+                <div class="text-xs text-slate-500 mt-2">就地掩蔽、維持疏散紀律[cite: 9]</div>
             </button>
         </div>
     </div>
@@ -77,7 +77,7 @@
     <!-- 3. 結束畫面 -->
     <div id="screen-end" class="flex-grow flex flex-col items-center justify-center p-6 hidden">
         <div class="text-6xl mb-4">🏆</div>
-        <h2 class="text-3xl font-black text-lime-400 mb-2">任務完成！</h2>
+        <h2 class="text-3xl font-black text-lime-400 mb-2">挑戰完成！</h2>
         <p id="end-message" class="text-slate-400 mb-8 text-center max-w-md"></p>
         <button onclick="location.reload()" class="bg-lime-500 text-black px-10 py-3 rounded-full font-black hover:bg-lime-400">重新挑戰</button>
     </div>
@@ -97,32 +97,32 @@
             language: "中"
         };
 
-        // 角色關卡定義[cite: 9]
+        // 依照腳本設定各角色關卡任務[cite: 9]
         const roleMissions = {
             "指揮官": [
-                { time: "09:21", title: "事故覺察", scenario: "地震預警響起，身為指揮官，你在校長室應採取？", options: ["立即執行趴下、掩護、穩住", "立刻跑出校長室廣播"], correct: 0 },
-                { time: "09:22", title: "發布疏散", scenario: "主震稍歇，你準備下令全校疏散，你的動作是？", options: ["吹響哨音(一長四短)並廣播導引至綜合球場", "直接打電話給消防隊"], correct: 0 },
-                { time: "09:26", title: "應變決策", scenario: "抵達綜合球場，得知二甲教室有人受困，你的指令？", options: ["派遣搶救組前往二甲教室搜救", "請全校學生回教室幫忙"], correct: 0 }
+                { time: "09:21", title: "事故覺察", scenario: "地震預警響起，身為指揮官，你在校長室應採取？[cite: 9]", options: ["立即執行趴下、掩護、穩住", "立刻跑出校長室廣播"], correct: 0 },
+                { time: "09:22", title: "發布疏散", scenario: "主震稍歇，你準備下令全校疏散，你的動作是？[cite: 9]", options: ["吹響哨音(一長四短)並廣播導引至綜合球場", "直接打電話給消防隊"], correct: 0 },
+                { time: "09:26", title: "應變決策", scenario: "抵達綜合球場，得知二甲教室有人受困，你的指令？[cite: 9]", options: ["派遣搶救組前往二甲教室搜救", "請全校學生回教室幫忙"], correct: 0 }
             ],
             "導師": [
-                { time: "09:21", title: "就地掩蔽", scenario: "地震發生，課堂上學生開始慌張，你該說什麼？", options: ["不要害怕，躲進桌下穩住，保護好頭頸部", "趕快站起來，往門口跑"], correct: 0 },
-                { time: "09:22", title: "疏散整備", scenario: "準備疏散，你如何協助不同年段學生？", options: ["協助低年級戴頭套、中高年級拿桌墊", "讓學生空手直接跑"], correct: 0 },
-                { time: "09:23", title: "清場確認", scenario: "帶領隊伍撤離教室前，必須完成哪個關鍵動作？", options: ["巡視教室及廁所確認沒人", "先把教室門反鎖"], correct: 0 },
-                { time: "09:26", title: "人數回報", scenario: "抵達球場發現少一名學生，如何回報？", options: ["舉紅卡，註明可能受困於二甲教室", "舉綠卡，先不要驚動大家"], correct: 0 }
+                { time: "09:21", title: "就地掩蔽", scenario: "地震發生，課堂上學生開始慌張，你該說什麼？[cite: 9]", options: ["不要害怕，躲進桌下穩住，保護好頭頸部", "趕快站起來，往門口跑"], correct: 0 },
+                { time: "09:22", title: "疏散整備", scenario: "準備疏散，你如何協助不同年段學生？[cite: 9]", options: ["協助低年級戴頭套、中高年級拿桌墊", "讓學生空手直接跑"], correct: 0 },
+                { time: "09:23", title: "清場確認", scenario: "帶領隊伍撤離教室前，必須完成哪個關鍵動作？[cite: 9]", options: ["巡視教室及廁所確認沒人", "先把教室門反鎖"], correct: 0 },
+                { time: "09:26", title: "人數回報", scenario: "抵達球場發現少一名學生，如何回報？[cite: 9]", options: ["舉紅卡，註明可能受困於二甲教室", "舉綠卡，先不要驚動大家"], correct: 0 }
             ],
             "通報組": [
-                { time: "09:26", title: "成立通報點", scenario: "抵達球場後，通報組的首要動作？", options: ["領取物資並紀錄指揮中心決策內容", "先去搬運受傷學生"], correct: 0 },
-                { time: "09:29", title: "對外通報", scenario: "指揮官下令通報119，你的說話內容？", options: ["1名學生受傷，請求救護車從正門進入支援", "學校有人受傷，請隨便派一輛車來"], correct: 0 },
-                { time: "09:30", title: "家長聯繫", scenario: "如何通知受傷學生的家長？", options: ["告知學生因地震砸傷已送往媽祖醫院", "打電話叫家長自己來帶人"], correct: 0 }
+                { time: "09:26", title: "成立通報點", scenario: "抵達球場後，通報組的首要動作？[cite: 9]", options: ["領取物資並紀錄指揮中心決策內容", "先去搬運受傷學生"], correct: 0 },
+                { time: "09:29", title: "對外通報", scenario: "指揮官下令通報119，你的說話內容？[cite: 8, 9]", options: ["1名學生受傷，請求救護車從正門進入支援", "學校有人受傷，請隨便派一輛車來"], correct: 0 },
+                { time: "09:30", title: "家長聯繫", scenario: "如何通知受傷學生的家長？[cite: 8, 9]", options: ["告知學生因地震砸傷已送往媽祖醫院", "打電話叫家長自己來帶人"], correct: 0 }
             ],
             "搶救組": [
-                { time: "09:26", title: "校舍巡視", scenario: "收到指令檢查校舍，你發現北棟教室狀況？", options: ["回報北棟教室外牆有碎石掉落", "直接進入倒塌建物"], correct: 0 },
-                { time: "09:27", title: "傷患搜救", scenario: "在二甲教室發現傷患，你的第一句話？", options: ["你還好嗎? 哪裡覺得不舒服? 能動嗎?", "趕快起來，我們沒時間了"], correct: 0 },
-                { time: "09:29", title: "傷患後送", scenario: "發現傷患右小腿撕裂傷，應運送至？", options: ["綜合球場救護站", "校門口等待"], correct: 0 }
+                { time: "09:26", title: "校舍巡視", scenario: "收到指令檢查校舍，你發現北棟教室狀況？[cite: 9]", options: ["回報北棟教室外牆有碎石掉落", "直接進入倒塌建物"], correct: 0 },
+                { time: "09:27", title: "傷患搜救", scenario: "在二甲教室發現傷患，你的第一句話？[cite: 9]", options: ["你還好嗎? 哪裡覺得不舒服? 能動嗎?", "趕快起來，我們沒時間了"], correct: 0 },
+                { time: "09:29", title: "傷患後送", scenario: "發現傷患右小腿撕裂傷，應運送至？[cite: 9]", options: ["綜合球場救護站", "校門口等待"], correct: 0 }
             ],
             "學生": [
-                { time: "09:21", title: "趴掩穩", scenario: "聽到預警聲響，你應該？", options: ["立即躲在桌下保護頭頸部", "躲到走廊上看"], correct: 0 },
-                { time: "09:23", title: "疏散紀律", scenario: "跟隨老師撤離時，應遵守？", options: ["不推、不語、不跑、不回頭", "可以小聲跟同學聊天"], correct: 0 }
+                { time: "09:21", title: "趴掩穩", scenario: "聽到預警聲響，身為學生你應該？[cite: 9]", options: ["立即就地執行趴下、掩護、穩住", "躲到走廊上看"], correct: 0 },
+                { time: "09:23", title: "疏散紀律", scenario: "跟隨老師撤離時，應遵守？[cite: 9]", options: ["不推、不語、不跑、不回頭", "可以小聲跟同學聊天"], correct: 0 }
             ]
         };
 
@@ -180,7 +180,7 @@
             let msg = `身為${currentRole}，您已成功協助辰光國小完成 115 年度防災演練！[cite: 9]`;
             document.getElementById('end-message').innerText = msg;
             
-            // 傳送資料至 Google Sheets
+            // 資料同步至 Google Sheets[cite: 4]
             fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
