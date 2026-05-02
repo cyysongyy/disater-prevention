@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>115年度辰光國小防災演練系統 - 指揮官加強版</title>
+    <title>115年度辰光國小防災演練系統 - 精確人數版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0F172A; color: white; font-family: 'PingFang TC', sans-serif; }
@@ -28,10 +28,10 @@
             <span id="role-tag" class="bg-lime-500 text-black px-2 py-1 rounded text-xs font-bold mr-2"></span>
             <span id="game-time" class="text-slate-400 italic text-sm"></span>
         </div>
-        <div id="ui-voice-mode" class="text-xs text-slate-500 font-bold">📢 語音與圖示已開啟</div>
+        <div id="ui-voice-mode" class="text-xs text-slate-500 font-bold">📢 趴掩穩 (Drop, Cover, Hold on) 模式已開啟</div>
     </div>
 
-    <!-- 1. 角色選擇畫面 -->
+    <!-- 1. 角色選擇 -->
     <div id="selector-screen" class="flex-grow flex flex-col items-center justify-center w-full">
         <h1 id="ui-title" class="text-3xl font-black mb-2 text-lime-400 text-center"></h1>
         <p id="ui-subtitle" class="text-slate-400 mb-8 text-center"></p>
@@ -63,71 +63,69 @@
         const i18n = {
             zh: {
                 title: "辰光防災大挑戰",
-                subtitle: "依照 115.05.05 腳本執行任務[cite: 6]",
-                voiceMode: "📢 語音與圖示已開啟",
+                subtitle: "依照 115.05.05 腳本執行任務[cite: 5]",
                 speaking: "正在播放引導語...",
-                end: "演練成功！",
+                end: "演練達成！",
                 retry: "回到首頁",
                 roleNames: ["指揮官", "導師", "通報組", "搶救組", "學生"],
-                alert: "這不符合演練腳本喔！[cite: 6]",
-                successMsg: "演練達成！依照腳本成功撤離至綜合球場。[cite: 6]"
+                alert: "這不符合演練腳本或趴掩穩規範喔！[cite: 5]",
+                successMsg: "演練達成！你已成功落實防震三步驟並完成各項避難工作。[cite: 5]"
             },
             en: {
-                title: "Chenguang Disaster Challenge",
-                subtitle: "Follow the 2026.05.05 drill script[cite: 6]",
-                voiceMode: "📢 Voice & Icons On",
+                title: "Chenguang Drill Challenge",
+                subtitle: "Follow the 2026.05.05 drill script[cite: 5]",
                 speaking: "Voice playing...",
                 end: "Mission Accomplished!",
                 retry: "Back to Home",
                 roleNames: ["Commander", "Teacher", "Comm Group", "Rescue Group", "Student"],
-                alert: "This does not follow the drill script![cite: 6]",
-                successMsg: "Success! Safely evacuated to the ball court according to script.[cite: 6]"
+                alert: "This does not follow the drill script or protocol![cite: 5]",
+                successMsg: "Success! You implemented the safety steps and completed all tasks.[cite: 5]"
             }
         };
 
         const missions = {
             "zh": {
                 "指揮官": [
-                    { time: "09:21", title: "地震覺察[cite: 6]", scenario: "地震預警聲響起，你在校長室應採取？", speech: "(執行趴下掩護穩住動作)", options: [{ icon: "🛡️", text: "立即進行就地掩蔽(趴掩穩)[cite: 6]", isCorrect: true }, { icon: "🏃", text: "趕快跑出辦公室。", isCorrect: false }] },
-                    { time: "09:22", title: "下令疏散[cite: 6]", scenario: "主震稍歇，你必須正式下令全校疏散：", speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", options: [{ icon: "📢", text: "吹哨(一長四短)並發布廣播指令[cite: 6]", isCorrect: true }, { icon: "🏃", text: "大喊：大家撤離！", isCorrect: false }] },
-                    { time: "09:23", title: "清點人數[cite: 6]", scenario: "抵達綜合球場成立指揮中心後：", speech: "請各班老師開始清點並回報班級人數。", options: [{ icon: "📋", text: "下令各班老師開始清點人數[cite: 6]", isCorrect: true }, { icon: "✅", text: "直接宣佈全員安全。", isCorrect: false }] },
-                    { time: "09:26", title: "派遣搶救任務[cite: 6]", scenario: "清點後發現二甲教室有人受困，你的指令是？", speech: "請各班老師及各組組長開始清點並回報人數。清點後發現有人受困於二甲教室，請搶救組派員進行搶救並回報救援狀況。", options: [{ icon: "⛑️", text: "派員搶救並要求回報救援狀況[cite: 6]", isCorrect: true }, { icon: "📞", text: "請通報組去看看。", isCorrect: false }] },
-                    { time: "09:29", title: "救出與撤離[cite: 6]", scenario: "接獲受困人員救回消息，後續指令？", speech: "目前受困人員已救回，請搶救組人員撤離建物。", options: [{ icon: "🏗️", text: "指示搶救組人員撤離建物[cite: 6]", isCorrect: true }, { icon: "⏳", text: "要求留在原處待命。", isCorrect: false }] },
-                    { time: "09:29", title: "傷患送醫指令[cite: 6]", scenario: "對於受傷學生，你如何指示？", speech: "請搶救組人員協助傷者上救護車送醫。", options: [{ icon: "🚑", text: "指示協助傷者上救護車送醫[cite: 6]", isCorrect: true }, { icon: "🏥", text: "請家長來帶回。", isCorrect: false }] },
-                    { time: "09:30", title: "災後通報決策[cite: 6]", scenario: "最後，評估校舍後你決定？", speech: "評估校舍損壞情形後，召集組長討論下令暫時停止上課集中安置。", options: [{ icon: "🏢", text: "討論後下令停止上課集中安置[cite: 6]", isCorrect: true }, { icon: "🔔", text: "直接宣佈解散。", isCorrect: false }] }
-                ],
-                "通報組": [
-                    { time: "09:29", title: "119通知[cite: 6]", scenario: "撥打 119 通報傷患送醫細節：", speech: "本校因地震影響有 1 位學生受傷，目前已送至救護站進行初步處理，請求派遣救護車從側門進入支援。", options: [{ icon: "🚑", text: "請求救護車從側門進入支援[cite: 6]", isCorrect: true }, { icon: "📱", text: "請救護車隨便找個門進。", isCorrect: false }] }
+                    { time: "09:21", title: "地震覺察掩蔽", scenario: "地震預警聲響起，你在辦公室應採取？", speech: "(執行趴下掩護穩住動作)", options: [{ icon: "🛡️", text: "立即進行就地掩蔽：趴下、掩護、穩住[cite: 5]", isCorrect: true }, { icon: "🏃", text: "趕快跑出辦公室。", isCorrect: false }] },
+                    { time: "09:22", title: "下令疏散指令", scenario: "主震稍歇，下令全校師生疏散：", speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", options: [{ icon: "📢", text: "吹哨(一長四短)並廣播疏散指令", isCorrect: true }, { icon: "🏃", text: "大喊疏散。", isCorrect: false }] },
+                    { time: "09:23", title: "成立指揮中心", scenario: "抵達球場後，你應採取的行動？", speech: "成立指揮中心並下令：請各班老師開始清點並回報班級人數。", options: [{ icon: "📋", text: "成立指揮中心並下令清點人數", isCorrect: true }, { icon: "✅", text: "宣佈全員安全。", isCorrect: false }] },
+                    { time: "09:26", title: "派遣搶救任務", scenario: "接獲二甲回報少一人，你的決策是？", speech: "清點後發現有人受門困於二甲教室，請搶救組派員進行搶救並回報救援狀況。", options: [{ icon: "⛑️", text: "派搶救組進場搜救並回報狀況", isCorrect: true }, { icon: "📞", text: "請通報組去看看。", isCorrect: false }] },
+                    { time: "09:29", title: "傷患撤離送醫", scenario: "受困人員救出後，你的後續指令？", speech: "目前受困人員已救回，請搶救組人員撤離建物並協助傷者上救護車送醫。", options: [{ icon: "🚑", text: "下令撤離建物並協助傷者送醫", isCorrect: true }, { icon: "🩺", text: "請護理師自行處理。", isCorrect: false }] }
                 ],
                 "導師": [
-                    { time: "09:21", title: "就地安撫[cite: 6]", scenario: "地震發生，於教室安撫學生：", speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", options: [{ icon: "🛡️", text: "安撫：躲進桌下穩住保護頭頸部[cite: 6]", isCorrect: true }, { icon: "🚪", text: "大家快跑！", isCorrect: false }] }
+                    { time: "09:21", title: "教室掩蔽引導", scenario: "警報響起，你在教室對學生喊話：", speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", options: [{ icon: "🛡️", text: "安撫學生落實「趴、掩、穩」[cite: 5]", isCorrect: true }, { icon: "🚪", text: "叫大家快跑。", isCorrect: false }] },
+                    { time: "09:23", title: "離室清場巡視", scenario: "疏散引導時，為了確保無人受困，你應：", speech: "離開教室大喊：還有沒有人？並留意廁所內狀況。", options: [{ icon: "🚪", text: "大喊清場並確認廁所無人", isCorrect: true }, { icon: "🔒", text: "直接離開。", isCorrect: false }] },
+                    { time: "09:26", title: "清點人數回報", scenario: "二甲班級清點人數，發現缺一人，如何回報？", speech: "點名結果：二甲應到 8 人，實到 7 人，1 人失蹤可能受困二甲，請救援。", options: [{ icon: "🚩", text: "舉紅卡報明應到 8 人、實到 7 人", isCorrect: true }, { icon: "✅", text: "回報全員到齊。", isCorrect: false }] }
                 ],
                 "搶救組": [
-                    { time: "09:27", title: "搜救檢傷[cite: 6]", scenario: "在二甲發現傷患，你的對話是？", speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", options: [{ icon: "🩹", text: "進行詢問：你還好嗎？能動嗎？[cite: 6]", isCorrect: true }, { icon: "🏃", text: "不說話直接背走。", isCorrect: false }] }
+                    { time: "09:21", title: "自身防護動作", scenario: "警報響起，搶救組成員應：", speech: "(執行趴下、掩護、穩住動作)", options: [{ icon: "🛡️", text: "立即落實趴下、掩護、穩住[cite: 5]", isCorrect: true }, { icon: "🏃", text: "拿起急救箱逃跑。", isCorrect: false }] },
+                    { time: "09:26", title: "校舍巡視回報", scenario: "清點裝備後巡檢校舍，回報內容？", speech: "北棟教室外牆有碎石掉落，南棟、西棟尚無異狀。請求搜救進場。", options: [{ icon: "🏢", text: "回報校舍外觀受損狀況", isCorrect: true }, { icon: "❌", text: "回報全部正常。", isCorrect: false }] },
+                    { time: "09:27", title: "進場檢傷詢問", scenario: "進入二甲發現傷患，你的對話是？", speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", options: [{ icon: "🩹", text: "詢問：你還好嗎？能動嗎？", isCorrect: true }, { icon: "🚨", text: "不說話直接背走。", isCorrect: false }] }
+                ],
+                "通報組": [
+                    { time: "09:29", title: "通報 119", scenario: "通報 119 請求支援，你的台詞是？", speech: "本校有 1 位學生受傷，已送至救護站，請求派遣救護車從側門進入支援。", options: [{ icon: "🚑", text: "通報 119：請求救護車由側門進入", isCorrect: true }, { icon: "📱", text: "請由大門進。", isCorrect: false }] }
                 ],
                 "學生": [
-                    { time: "09:23", title: "疏散原則[cite: 6]", scenario: "依指示逃生時應遵守？", speech: "不推、不語、不跑、不回頭。", options: [{ icon: "🔇", text: "遵守不推、不語、不跑、不回頭[cite: 6]", isCorrect: true }, { icon: "🗣️", text: "邊走邊大聲聊天。", isCorrect: false }] }
+                    { time: "09:21", title: "落實趴掩穩", scenario: "警報響起，身為學生應立即採取的動作？", speech: "進行就地掩蔽(趴下、掩護、穩住)，保護頭頸部。", options: [{ icon: "🛡️", text: "落實「趴下、掩護、穩住」保護頭頸部[cite: 5]", isCorrect: true }, { icon: "🏃", text: "快跑出教室。", isCorrect: false }] },
+                    { time: "09:23", title: "疏散三不原則", scenario: "疏散撤離過程中應遵守？", speech: "不推、不語、不跑、不回頭。", options: [{ icon: "🔇", text: "遵守不推、不語、不跑、不回頭", isCorrect: true }, { icon: "🗣️", text: "邊走邊大聲討論。", isCorrect: false }] }
                 ]
             },
             "en": {
                 "Commander": [
-                    { time: "09:21", title: "Drop, Cover, Hold on[cite: 6]", scenario: "Earthquake starts, what do you do in your office?", speech: "(Performing Drop, Cover, Hold on)", options: [{ icon: "🛡️", text: "Drop, Cover, Hold on[cite: 6]", isCorrect: true }, { icon: "🏃", text: "Run outside.", isCorrect: false }] },
-                    { time: "09:22", title: "Broadcast Command[cite: 6]", scenario: "Shock stopped, give order:", speech: "Attention everyone, the earthquake has stopped. Please follow teachers to the ball court.", options: [{ icon: "📢", text: "Whistle & Broadcast evacuation[cite: 6]", isCorrect: true }, { icon: "🏃", text: "Run now!", isCorrect: false }] },
-                    { time: "09:26", title: "Rescue Mission[cite: 6]", scenario: "Someone trapped at Room 2A. Your order?", speech: "Rescue group, please go to Room 2A for search and rescue, and report the situation back.", options: [{ icon: "⛑️", text: "Order rescue and situation report[cite: 6]", isCorrect: true }, { icon: "📞", text: "Tell everyone to wait.", isCorrect: false }] },
-                    { time: "09:29", title: "Evacuation Order[cite: 6]", scenario: "Student rescued, now what?", speech: "Person rescued. Rescue team, please evacuate from the building.", options: [{ icon: "🏗️", text: "Order rescue team to leave building[cite: 6]", isCorrect: true }, { icon: "⏳", text: "Wait inside.", isCorrect: false }] },
-                    { time: "09:29", title: "Medical Support[cite: 6]", scenario: "For the injured student:", speech: "Rescue team, please assist the injured student onto the ambulance.", options: [{ icon: "🚑", text: "Assist student onto ambulance[cite: 6]", isCorrect: true }, { icon: "🏥", text: "Go home.", isCorrect: false }] }
-                ],
-                "Comm Group": [
-                    { time: "09:29", title: "Call 119[cite: 6]", scenario: "Reporting injury to 119:", speech: "One student is injured. Ambulance requested to enter via SIDE gate.", options: [{ icon: "🚑", text: "Enter through SIDE Gate[cite: 6]", isCorrect: true }, { icon: "📱", text: "Back gate.", isCorrect: false }] }
+                    { time: "09:21", title: "Drop, Cover, Hold on", scenario: "Alarm rings! First action?", speech: "(Drop, Cover, Hold on)", options: [{ icon: "🛡️", text: "Drop, Cover, Hold on[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run out.", isCorrect: false }] },
+                    { time: "09:26", title: "Rescue Mission", scenario: "1 missing at Room 2A. Decision?", speech: "Rescue group, go to Room 2A and report situation.", options: [{ icon: "⛑️", text: "Order rescue and situation report", isCorrect: true }, { icon: "📞", text: "Wait.", isCorrect: false }] }
                 ],
                 "Teacher": [
-                    { time: "09:21", title: "Comforting[cite: 6]", scenario: "Instructing class during quake:", speech: "Don't be afraid. Get under the table and protect your head.", options: [{ icon: "🛡️", text: "Protect head and neck[cite: 6]", isCorrect: true }, { icon: "🏃", text: "Run out!", isCorrect: false }] }
+                    { time: "09:26", title: "Roll Call", scenario: "Reporting missing student in Room 2A:", speech: "Room 2A: 8 expected, 7 present, 1 missing at Room 2A.", options: [{ icon: "🚩", text: "Report: 8 expected, 7 present", isCorrect: true }, { icon: "✅", text: "All clear.", isCorrect: false }] }
                 ],
                 "Rescue Group": [
-                    { time: "09:27", title: "Triage[cite: 6]", scenario: "Found the student, your question?", speech: "Are you okay? Where does it hurt? Can you move?", options: [{ icon: "🩹", text: "Ask: Can you move?[cite: 6]", isCorrect: true }, { icon: "💪", text: "Get up now.", isCorrect: false }] }
+                    { time: "09:21", title: "Protocol", scenario: "Alarm rings!", speech: "(Drop, Cover, Hold on)", options: [{ icon: "🛡️", text: "Drop, Cover, Hold on[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run out.", isCorrect: false }] }
+                ],
+                "Comm Group": [
+                    { time: "09:29", title: "Call 119", scenario: "Request to 119:", speech: "Requesting ambulance via SIDE gate.", options: [{ icon: "🚑", text: "Enter through SIDE gate", isCorrect: true }, { icon: "📱", text: "Main gate.", isCorrect: false }] }
                 ],
                 "Student": [
-                    { time: "09:23", title: "Rules[cite: 6]", scenario: "Rules during evacuation:", speech: "No push, no talk, no run, no look back.", options: [{ icon: "🔇", text: "No push, no talk, no run[cite: 6]", isCorrect: true }, { icon: "🗣️", text: "Talk loudly.", isCorrect: false }] }
+                    { time: "09:21", title: "Self Safety", scenario: "Alarm rings!", speech: "(Drop, Cover, Hold on)", options: [{ icon: "🛡️", text: "Drop, Cover, Hold on[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run out.", isCorrect: false }] }
                 ]
             }
         };
@@ -144,12 +142,10 @@
         }
 
         function renderRoles() {
-            const grid = document.getElementById('role-grid');
-            grid.innerHTML = "";
+            const grid = document.getElementById('role-grid'); grid.innerHTML = "";
             const icons = ["🛡️", "🎒", "📞", "⛑️", "🧒"];
             const zhNames = ["指揮官", "導師", "通報組", "搶救組", "學生"];
             const enNames = ["Commander", "Teacher", "Comm Group", "Rescue Group", "Student"];
-            
             i18n[curLang].roleNames.forEach((name, idx) => {
                 const targetRole = curLang === 'zh' ? zhNames[idx] : enNames[idx];
                 grid.innerHTML += `<button onclick="initGame('${targetRole}')" class="btn-option flex-col !items-center !text-center shadow-lg"><span class="text-4xl mb-2">${icons[idx]}</span><span class="font-bold">${name}</span></button>`;
@@ -157,8 +153,7 @@
         }
 
         function initGame(role) {
-            curRole = role; 
-            curStep = 0;
+            curRole = role; curStep = 0;
             document.getElementById('selector-screen').classList.add('hidden');
             document.getElementById('info-bar').classList.remove('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
@@ -172,8 +167,7 @@
             document.getElementById('game-time').innerText = `Time: ${data.time}`;
             document.getElementById('mission-title').innerText = data.title;
             document.getElementById('scenario-desc').innerText = data.scenario;
-            const list = document.getElementById('options-list');
-            list.innerHTML = "";
+            const list = document.getElementById('options-list'); list.innerHTML = "";
             data.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = "btn-option shadow-md";
@@ -185,9 +179,7 @@
                             if(curStep < missions[curLang][curRole].length) renderStep(); 
                             else finish(); 
                         }); 
-                    } else {
-                        alert(i18n[curLang].alert);
-                    }
+                    } else { alert(i18n[curLang].alert); }
                 };
                 list.appendChild(btn);
             });
@@ -204,12 +196,9 @@
                 msg.lang = 'en-US';
                 msg.voice = voices.find(v => v.lang.includes('en-US')) || voices.find(v => v.lang.includes('en'));
             }
-            msg.rate = 0.85;
+            msg.rate = 0.9;
             msg.onstart = () => document.getElementById('speaking-indicator').classList.remove('hidden');
-            msg.onend = () => { 
-                document.getElementById('speaking-indicator').classList.add('hidden'); 
-                if (cb) cb(); 
-            };
+            msg.onend = () => { document.getElementById('speaking-indicator').classList.add('hidden'); if (cb) cb(); };
             window.speechSynthesis.speak(msg);
         }
 
@@ -217,7 +206,7 @@
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('end-screen').classList.remove('hidden');
             document.getElementById('end-text').innerText = i18n[curLang].successMsg;
-            const payload = { playerName: "User_" + Math.floor(Math.random()*1000), role: curRole, totalTime: "05:00", successRate: "100%", missingFound: "是", commStatus: "是", language: curLang };
+            const payload = { playerName: "User_" + Math.floor(Math.random()*1000), role: curRole, language: curLang };
             fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
         }
 
