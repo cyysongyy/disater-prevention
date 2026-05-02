@@ -18,8 +18,8 @@
 
     <!-- 語言切換 -->
     <div class="w-full max-w-4xl flex justify-end gap-2 mb-4">
-        <button onclick="setLanguage('zh')" class="text-xs bg-slate-700 px-3 py-1 rounded hover:bg-lime-500 hover:text-black transition">中文</button>
-        <button onclick="setLanguage('en')" class="text-xs bg-slate-700 px-3 py-1 rounded hover:bg-lime-500 hover:text-black transition">English</button>
+        <button onclick="setLanguage('zh')" class="text-xs bg-slate-700 px-4 py-2 rounded-lg hover:bg-lime-500 hover:text-black transition font-bold">中文</button>
+        <button onclick="setLanguage('en')" class="text-xs bg-slate-700 px-4 py-2 rounded-lg hover:bg-lime-500 hover:text-black transition font-bold">English</button>
     </div>
 
     <!-- 頂部狀態 -->
@@ -28,13 +28,13 @@
             <span id="role-tag" class="bg-lime-500 text-black px-2 py-1 rounded text-xs font-bold mr-2"></span>
             <span id="game-time" class="text-slate-400 italic text-sm"></span>
         </div>
-        <div class="text-xs text-slate-500 font-bold">🔊 語音與圖示已開啟</div>
+        <div id="ui-voice-mode" class="text-xs text-slate-500 font-bold">📢 語音與圖示已開啟</div>
     </div>
 
     <!-- 1. 角色選擇 -->
-    <div id="selector-screen" class="flex-grow flex flex-col items-center justify-center">
-        <h1 id="ui-title" class="text-3xl font-black mb-2 text-lime-400 text-center">辰光防災大挑戰</h1>
-        <p id="ui-subtitle" class="text-slate-400 mb-8 text-center">依照 115.05.05 腳本執行任務</p>
+    <div id="selector-screen" class="flex-grow flex flex-col items-center justify-center w-full">
+        <h1 id="ui-title" class="text-3xl font-black mb-2 text-lime-400 text-center"></h1>
+        <p id="ui-subtitle" class="text-slate-400 mb-8 text-center"></p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-4xl" id="role-grid"></div>
     </div>
 
@@ -49,9 +49,9 @@
     <!-- 3. 完成畫面 -->
     <div id="end-screen" class="hidden text-center flex-grow flex flex-col justify-center">
         <div class="text-7xl mb-4">🏆</div>
-        <h2 id="ui-end-title" class="text-3xl font-black text-lime-400 mb-2">演練成功！</h2>
+        <h2 id="ui-end-title" class="text-3xl font-black text-lime-400 mb-2"></h2>
         <p id="end-text" class="text-slate-400 mb-8 max-w-md mx-auto"></p>
-        <button onclick="location.reload()" id="ui-retry" class="bg-lime-500 text-black px-12 py-4 rounded-full font-black hover:bg-lime-400">重新挑戰</button>
+        <button onclick="location.reload()" id="ui-retry" class="bg-lime-500 text-black px-12 py-4 rounded-full font-black hover:bg-lime-400"></button>
     </div>
 
     <script>
@@ -61,78 +61,90 @@
         let curStep = 0;
 
         const i18n = {
-            zh: { title: "辰光防災大挑戰", subtitle: "依照 115.05.05 腳本執行任務", end: "演練成功！", retry: "重新挑戰", roles: ["指揮官", "導師", "通報組", "搶救組", "學生"] },
-            en: { title: "Chenguang Disaster Challenge", subtitle: "2026.05.05 Disaster Drill", end: "Mission Accomplished!", retry: "Retry", roles: ["Commander", "Teacher", "Comm Group", "Rescue Group", "Student"] }
+            zh: {
+                title: "辰光防災大挑戰",
+                subtitle: "依照 115.05.05 腳本執行任務[cite: 5]",
+                voiceMode: "📢 語音與圖示已開啟",
+                speaking: "正在播放引導語...",
+                end: "演練成功！",
+                retry: "重新挑戰",
+                roleNames: ["指揮官", "導師", "通報組", "搶救組", "學生"],
+                alert: "這不符合演練腳本喔！[cite: 5]"
+            },
+            en: {
+                title: "Chenguang Disaster Challenge",
+                subtitle: "Execute missions based on 2026.05.05 script[cite: 5]",
+                voiceMode: "📢 Voice & Icons On",
+                speaking: "Voice playing...",
+                end: "Mission Accomplished!",
+                retry: "Retry",
+                roleNames: ["Commander", "Teacher", "Comm Group", "Rescue Group", "Student"],
+                alert: "This does not follow the script![cite: 5]"
+            }
         };
 
         const missions = {
             "zh": {
                 "指揮官": [
-                    { time: "09:22", title: "發布廣播指令[cite: 5]", scenario: "主震暫歇，你必須正式下令疏散：", speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", options: [{ icon: "📢", text: "吹哨一長四短並廣播引導語[cite: 5]", isCorrect: true }, { icon: "🏃", text: "大喊：大家快跑！", isCorrect: false }] },
-                    { time: "09:29", title: "傷患後送指令[cite: 5]", scenario: "受困人員已救回，你如何下令？", speech: "目前受困人員已救回，請搶救組人員撤離建物。請搶救組人員協助傷者上救護車送醫。", options: [{ icon: "🚑", text: "下令撤離建物並協助傷者送醫[cite: 5]", isCorrect: true }, { icon: "🛑", text: "留在原地等待。", isCorrect: false }] }
-                ],
-                "導師": [
-                    { time: "09:21", title: "就地掩蔽安撫[cite: 5]", scenario: "地震發生，你在教室對學生喊話：", speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", options: [{ icon: "🛡️", text: "引導：不要害怕，躲進桌下穩住[cite: 5]", isCorrect: true }, { icon: "🏃", text: "命令：快點出去外面！", isCorrect: false }] },
-                    { time: "09:23", title: "清點人數回報[cite: 5]", scenario: "抵達球場，發現少一名學生，你如何回報？", speech: "本班應到三十人，實到二十九人，一人失蹤，可能受困於二甲教室，請派員救援。", options: [{ icon: "🚩", text: "回報：舉紅卡，一人失蹤可能受困二甲[cite: 5]", isCorrect: true }, { icon: "✅", text: "回報：全員到齊。", isCorrect: false }] }
+                    { time: "09:22", title: "發布廣播指令[cite: 5]", scenario: "主震暫歇，你必須下令全校疏散，你的動作是？", speech: "全校師生請注意，目前地震已暫時停止，請大家保持鎮定不要慌張，請老師運用主震暫歇時間攜帶防災背包及安全頭盔引導學生疏散至綜合球場。", options: [{ icon: "📢", text: "吹哨一長四短並廣播引導語[cite: 5]", isCorrect: true }, { icon: "🏃", text: "大喊：大家快跑！", isCorrect: false }] }
                 ],
                 "通報組": [
-                    { time: "09:29", title: "對外通報 119[cite: 5]", scenario: "請求支援，根據腳本你的台詞是？", speech: "本校因地震影響有 1 位學生受傷，目前已送至救護站進行初步處理，請求派遣救護車從正門進入支援。", options: [{ icon: "🚑", text: "通報：請求救護車從正門進入支援[cite: 5]", isCorrect: true }, { icon: "📱", text: "通報：請從側門進來。", isCorrect: false }] }
+                    { time: "09:29", title: "任務 A：119通知救護車[cite: 5]", scenario: "接獲傷患訊息，請立即撥打 119 通報：", speech: "本校因地震影響有 1 位學生受傷，目前已送至救護站進行初步處理，請求派遣救護車從正門進入支援。", options: [{ icon: "🚑", text: "通報 119：請求救護車從正門進入支援[cite: 5]", isCorrect: true }, { icon: "📱", text: "通報 119：請從後門進來。", isCorrect: false }] },
+                    { time: "09:29", title: "任務 B：通知受傷學生家長[cite: 5]", scenario: "緊接著，你必須電話聯繫受傷學生的家長：", speech: "您好：這裡是辰光國小，您的孩子因地震逃生時遭掉落物砸傷腿部，目前學校已完成初步處理，並由救護車送往媽祖醫院救傷，請您前往協助。", options: [{ icon: "📞", text: "電話家長：已由救護車送往媽祖醫院救傷[cite: 5]", isCorrect: true }, { icon: "🏘️", text: "電話家長：請您自己帶去醫院。", isCorrect: false }] },
+                    { time: "09:35", title: "任務 C：通知災害應變中心[cite: 5]", scenario: "最後，向雲林縣災害應變中心進行災後回報：", speech: "災害應變中心您好：本次地震學校建物無大損傷；有1學生受傷，已完成處理，目前全校人員安置在避難集合地點。", options: [{ icon: "🏢", text: "通報應變中心：建物無大損傷、完成受傷處理[cite: 5]", isCorrect: true }, { icon: "📝", text: "通報應變中心：學校沒事了。", isCorrect: false }] }
+                ],
+                "導師": [
+                    { time: "09:21", title: "掩蔽引導[cite: 5]", scenario: "地震發生時，你在教室對學生喊話：", speech: "各位同學不要害怕，請盡量躲進桌下並穩住，保護好頭頸部。", options: [{ icon: "🛡️", text: "引導：不要害怕，躲進桌下穩住[cite: 5]", isCorrect: true }, { icon: "🚪", text: "叫大家快跑出教室。", isCorrect: false }] }
                 ],
                 "搶救組": [
-                    { time: "09:27", title: "搜救檢傷詢問[cite: 5]", scenario: "發現傷者，你如何詢問？", speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", options: [{ icon: "🩹", text: "檢傷：你還好嗎？能動嗎？[cite: 5]", isCorrect: true }, { icon: "💪", text: "指令：手給我。", isCorrect: false }] }
+                    { time: "09:27", title: "搜救詢問[cite: 5]", scenario: "在二甲教室發現傷患，你的檢傷對話是？", speech: "你還好嗎？哪裡覺得不舒服？能動嗎？", options: [{ icon: "🩹", text: "詢問：你還好嗎？能動嗎？[cite: 5]", isCorrect: true }, { icon: "🏃", text: "直接拉人跑出去。", isCorrect: false }] }
                 ],
                 "學生": [
-                    { time: "09:23", title: "疏散紀律守則[cite: 5]", scenario: "疏散應遵守：", speech: "不推、不語、不跑、不回頭。", options: [{ icon: "🔇", text: "守則：不推、不語、不跑、不回頭[cite: 5]", isCorrect: true }, { icon: "🗣️", text: "討論震度。", isCorrect: false }] }
+                    { time: "09:23", title: "疏散守則[cite: 5]", scenario: "撤離過程中應遵守的四不原則：", speech: "不推、不語、不跑、不回頭。", options: [{ icon: "🔇", text: "守則：不推、不語、不跑、不回頭[cite: 5]", isCorrect: true }, { icon: "🗣️", text: "守則：邊走邊討論地震。", isCorrect: false }] }
                 ]
             },
             "en": {
                 "Commander": [
-                    { time: "09:22", title: "Broadcast Command[cite: 5]", scenario: "What is your evacuation order?", speech: "Attention everyone, the earthquake has stopped. Please stay calm and follow teachers to the ball court.", options: [{ icon: "📢", text: "Broadcast to Ball Court[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run!", isCorrect: false }] }
-                ],
-                "Teacher": [
-                    { time: "09:21", title: "Comfort Students[cite: 5]", scenario: "During the quake, you say:", speech: "Don't be afraid. Please get under the table and protect your head.", options: [{ icon: "🛡️", text: "Protect your head and neck[cite: 5]", isCorrect: true }, { icon: "🚪", text: "Run to exit!", isCorrect: false }] }
+                    { time: "09:22", title: "Broadcast[cite: 5]", scenario: "Earthquake stopped, broadcast order:", speech: "Attention everyone, the earthquake has stopped. Please stay calm. Teachers, lead students to the ball court.", options: [{ icon: "📢", text: "Broadcast to Ball Court[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run!", isCorrect: false }] }
                 ],
                 "Comm Group": [
-                    { time: "09:29", title: "Call 119[cite: 5]", scenario: "Your report to 119:", speech: "One student is injured. We need an ambulance. Please enter through the main gate.", options: [{ icon: "🚑", text: "Request ambulance via main gate[cite: 5]", isCorrect: true }, { icon: "📱", text: "Help us now.", isCorrect: false }] }
+                    { time: "09:29", title: "Task A: Call 119[cite: 5]", scenario: "Reporting to 119 for medical support:", speech: "One student is injured. We need an ambulance. Please enter through the main gate.", options: [{ icon: "🚑", text: "Call 119: Enter via Main Gate[cite: 5]", isCorrect: true }, { icon: "📱", text: "Enter via Back Gate.", isCorrect: false }] },
+                    { time: "09:29", title: "Task B: Notify Parents[cite: 5]", scenario: "Calling the parent of the injured student:", speech: "Hello, this is Chenguang School. Your child was injured and is being taken to Mazu Hospital by ambulance.", options: [{ icon: "📞", text: "Notify Parent: Transported to Mazu Hospital[cite: 5]", isCorrect: true }, { icon: "🏘️", text: "Go to hospital by yourself.", isCorrect: false }] },
+                    { time: "09:35", title: "Task C: Report to EOC[cite: 5]", scenario: "Final report to the Emergency Operation Center:", speech: "Hello EOC, our school building has no major damage. One student was injured and treated.", options: [{ icon: "🏢", text: "Report EOC: No major damage, student treated[cite: 5]", isCorrect: true }, { icon: "📝", text: "School is fine.", isCorrect: false }] }
+                ],
+                "Teacher": [
+                    { time: "09:21", title: "Comforting[cite: 5]", scenario: "Instructing class during quake:", speech: "Don't be afraid. Please get under the table and protect your head.", options: [{ icon: "🛡️", text: "Guide: Protect head and neck[cite: 5]", isCorrect: true }, { icon: "🏃", text: "Run out!", isCorrect: false }] }
                 ],
                 "Rescue Group": [
-                    { time: "09:27", title: "Search and Rescue[cite: 5]", scenario: "In the classroom, you ask:", speech: "Are you okay? Where does it hurt? Can you move?", options: [{ icon: "🩹", text: "Are you okay? Can you move?[cite: 5]", isCorrect: true }, { icon: "💪", text: "Come with me.", isCorrect: false }] }
+                    { time: "09:27", title: "Triage[cite: 5]", scenario: "Found the student, your question?", speech: "Are you okay? Where does it hurt? Can you move?", options: [{ icon: "🩹", text: "Ask: Are you okay? Can you move?[cite: 5]", isCorrect: true }, { icon: "💪", text: "Get up now.", isCorrect: false }] }
                 ],
                 "Student": [
-                    { time: "09:23", title: "Discipline[cite: 5]", scenario: "Rules during evacuation:", speech: "Don't push, don't talk, don't run, don't look back.", options: [{ icon: "🔇", text: "No push, no talk, no run[cite: 5]", isCorrect: true }, { icon: "🗣️", text: "Talk loudly.", isCorrect: false }] }
+                    { time: "09:23", title: "Rules[cite: 5]", scenario: "Rules during evacuation:", speech: "No push, no talk, no run, no look back.", options: [{ icon: "🔇", text: "Rule: No push, no talk, no run[cite: 5]", isCorrect: true }, { icon: "🗣️", text: "Talk loudly.", isCorrect: false }] }
                 ]
             }
         };
-
-        function speak(text, cb) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            const voices = window.speechSynthesis.getVoices();
-            if (curLang === 'zh') {
-                msg.lang = 'zh-TW';
-                msg.voice = voices.find(v => v.lang.includes('zh-TW')) || voices.find(v => v.lang.includes('zh'));
-            } else {
-                msg.lang = 'en-US';
-                msg.voice = voices.find(v => v.lang.includes('en-US')) || voices.find(v => v.lang.includes('en'));
-            }
-            msg.rate = 0.85;
-            msg.onstart = () => document.getElementById('speaking-indicator').classList.remove('hidden');
-            msg.onend = () => { document.getElementById('speaking-indicator').classList.add('hidden'); if (cb) cb(); };
-            window.speechSynthesis.speak(msg);
-        }
 
         function setLanguage(lang) {
             curLang = lang;
             document.getElementById('ui-title').innerText = i18n[lang].title;
             document.getElementById('ui-subtitle').innerText = i18n[lang].subtitle;
+            document.getElementById('ui-voice-mode').innerText = i18n[lang].voiceMode;
+            document.getElementById('speaking-indicator').innerText = i18n[lang].speaking;
+            document.getElementById('ui-end-title').innerText = i18n[lang].end;
+            document.getElementById('ui-retry').innerText = i18n[lang].retry;
             renderRoles();
         }
 
         function renderRoles() {
-            const grid = document.getElementById('role-grid'); grid.innerHTML = "";
+            const grid = document.getElementById('role-grid');
+            grid.innerHTML = "";
             const icons = ["🛡️", "🎒", "📞", "⛑️", "🧒"];
-            i18n[curLang].roles.forEach((name, idx) => {
-                grid.innerHTML += `<button onclick="initGame('${name}')" class="btn-option flex-col !items-center !text-center"><span class="text-4xl mb-2">${icons[idx]}</span><span class="font-bold">${name}</span></button>`;
+            const zhNames = ["指揮官", "導師", "通報組", "搶救組", "學生"];
+            const enNames = ["Commander", "Teacher", "Comm Group", "Rescue Group", "Student"];
+            
+            i18n[curLang].roleNames.forEach((name, idx) => {
+                const targetRole = curLang === 'zh' ? zhNames[idx] : enNames[idx];
+                grid.innerHTML += `<button onclick="initGame('${targetRole}')" class="btn-option flex-col !items-center !text-center shadow-lg"><span class="text-4xl mb-2">${icons[idx]}</span><span class="font-bold">${name}</span></button>`;
             });
         }
 
@@ -150,21 +162,53 @@
             document.getElementById('game-time').innerText = `Time: ${data.time}`;
             document.getElementById('mission-title').innerText = data.title;
             document.getElementById('scenario-desc').innerText = data.scenario;
-            const list = document.getElementById('options-list'); list.innerHTML = "";
+            const list = document.getElementById('options-list');
+            list.innerHTML = "";
             data.options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "btn-option";
-                btn.innerHTML = `<span class="text-2xl mr-4">${opt.icon}</span><span>${opt.text}</span>`;
-                btn.onclick = () => { if(opt.isCorrect) { speak(data.speech, () => { curStep++; if(curStep < missions[curLang][curRole].length) renderStep(); else finish(); }); } else alert("錯誤！不符腳本規範[cite: 5]"); };
+                btn.className = "btn-option shadow-md";
+                btn.innerHTML = `<span class="text-2xl mr-4">${opt.icon}</span><span class="text-sm font-medium">${opt.text}</span>`;
+                btn.onclick = () => { 
+                    if(opt.isCorrect) { 
+                        speak(data.speech, () => { 
+                            curStep++; 
+                            if(curStep < missions[curLang][curRole].length) renderStep(); 
+                            else finish(); 
+                        }); 
+                    } else {
+                        alert(i18n[curLang].alert);
+                    }
+                };
                 list.appendChild(btn);
             });
+        }
+
+        function speak(text, cb) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            if (curLang === 'zh') {
+                msg.lang = 'zh-TW';
+                msg.voice = voices.find(v => v.lang.includes('zh-TW')) || voices.find(v => v.lang.includes('zh'));
+            } else {
+                msg.lang = 'en-US';
+                msg.voice = voices.find(v => v.lang.includes('en-US')) || voices.find(v => v.lang.includes('en'));
+            }
+            msg.rate = 0.85;
+            msg.onstart = () => document.getElementById('speaking-indicator').classList.remove('hidden');
+            msg.onend = () => { 
+                document.getElementById('speaking-indicator').classList.add('hidden'); 
+                if (cb) cb(); 
+            };
+            window.speechSynthesis.speak(msg);
         }
 
         function finish() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('end-text').innerText = curLang === 'zh' ? `演練達成！依照腳本成功撤離至綜合球場。[cite: 5]` : `Success! Safely evacuated to the ball court.[cite: 5]`;
             const payload = { playerName: "User_" + Math.floor(Math.random()*1000), role: curRole, totalTime: "05:00", successRate: "100%", missingFound: "是", commStatus: "是", language: curLang };
-            fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+            fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
         }
 
         window.speechSynthesis.onvoiceschanged = () => { console.log("Voices loaded"); };
